@@ -3,7 +3,7 @@
 namespace Climbx\Config;
 
 use Climbx\Bag\Bag;
-use Climbx\Config\Exception\ConfigurationException;
+use Climbx\Config\Exception\ConfigurationParameterException;
 
 class ConfigBag extends Bag
 {
@@ -15,7 +15,7 @@ class ConfigBag extends Bag
     public function require($item): array | bool | int | object | string | null
     {
         if (!$this->has($item)) {
-            throw new ConfigurationException(sprintf('The parameter "%s" was not found.', $item));
+            throw new ConfigurationParameterException(sprintf('The parameter "%s" was not found.', $item));
         }
 
         return $this->get($item);
