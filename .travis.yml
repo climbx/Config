@@ -18,6 +18,8 @@ before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
+  # Yaml extension
+  - sudo pecl install yaml
 
 script: php -d xdebug.mode="develop,coverage,debug,gcstats,profile,trace" ./vendor/bin/phpunit --coverage-clover clover.xml
 
