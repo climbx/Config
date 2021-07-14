@@ -10,9 +10,6 @@ branches:
   only:
     - '1.0'
 
-install:
-  - composer install
-
 before_script:
   # Prepare code coverage report for CodeClimate
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -20,6 +17,7 @@ before_script:
   - ./cc-test-reporter before-build
   # Yaml extension
   - sudo pecl install yaml
+  - composer install
 
 script: php -d xdebug.mode="develop,coverage,debug,gcstats,profile,trace" ./vendor/bin/phpunit --coverage-clover clover.xml
 
