@@ -17,7 +17,7 @@ before_script:
   - ./cc-test-reporter before-build
   # Yaml extension
   - sudo apt-get install php-pear
-  - sudo pecl install yaml
+  - sudo printf "\n" | pecl install yaml
   - composer install
 
 script: php -d xdebug.mode="develop,coverage,debug,gcstats,profile,trace" ./vendor/bin/phpunit --coverage-clover clover.xml
