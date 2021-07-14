@@ -43,7 +43,6 @@ class YamlLoader extends Loader implements LoaderInterface
 
         try {
             $data = yaml_parse($envParsedData);
-
         } catch (\Throwable) {
             throw new ConfigurationParserException(
                 sprintf('The configuration file "%s" is not valid yaml.', $path)
