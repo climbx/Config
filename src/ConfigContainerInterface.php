@@ -2,7 +2,8 @@
 
 namespace Climbx\Config;
 
-use Climbx\Config\Exception\ConfigurationException;
+use Climbx\Config\Exception\ConfigurationParserException;
+use Climbx\Config\Bag\ConfigBag;
 
 interface ConfigContainerInterface
 {
@@ -26,7 +27,7 @@ interface ConfigContainerInterface
      *
      * @return ConfigBag
      *
-     * @throws ConfigurationException
+     * @throws ConfigurationParserException
      */
     public function require(string $path): ConfigBag;
 }
