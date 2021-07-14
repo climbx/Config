@@ -9,6 +9,7 @@ use Climbx\Filesystem\FileHelper;
 use PHPUnit\Framework\TestCase;
 
 /**
+ * @covers \Climbx\Config\Loader\Loader
  * @covers \Climbx\Config\Loader\JsonLoader
  * @covers \Climbx\Config\Parser\EnvVarParser
  * @covers \Climbx\Filesystem\FileHelper
