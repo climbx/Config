@@ -23,7 +23,8 @@
     "require": {
         "php": ">=8.0",
         "climbx/filesystem": "^1.0",
-        "climbx/bag": "^1.0"
+        "climbx/bag": "^1.0",
+        "ext-yaml": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"

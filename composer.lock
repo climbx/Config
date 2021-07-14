@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4502b2ef031b0437b2e9c630d3436cd",
+    "content-hash": "cf40855036cc2735125a90780c54b640",
     "packages": [
         {
             "name": "climbx/bag",
-            "version": "1.0.1",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/climbx/Bag.git",
-                "reference": "1bb5be3030e9912e9c8cb166a71a44ce43ce6fdb"
+                "reference": "ba21de9124f32adf1dd95a0b776ab661e62bc46d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/climbx/Bag/zipball/1bb5be3030e9912e9c8cb166a71a44ce43ce6fdb",
-                "reference": "1bb5be3030e9912e9c8cb166a71a44ce43ce6fdb",
+                "url": "https://api.github.com/repos/climbx/Bag/zipball/ba21de9124f32adf1dd95a0b776ab661e62bc46d",
+                "reference": "ba21de9124f32adf1dd95a0b776ab661e62bc46d",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
             ],
             "support": {
                 "issues": "https://github.com/climbx/Bag/issues",
-                "source": "https://github.com/climbx/Bag/tree/1.0.1"
+                "source": "https://github.com/climbx/Bag/tree/1.0.3"
             },
             "time": "2021-07-06T00:00:00+00:00"
         },
@@ -2200,7 +2200,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.0"
+        "php": ">=8.0",
+        "ext-yaml": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.0.0"
