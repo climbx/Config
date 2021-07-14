@@ -16,6 +16,7 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
   # Yaml extension
+  - sudo apt-get install php-pear
   - sudo pecl install yaml
   - composer install
 
