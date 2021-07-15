@@ -20,7 +20,7 @@ class JsonLoader extends Loader
         }
 
         $rawData = $this->fileHelper->getContentAsString($filename);
-        $envParsedData = $this->envVarParser->getParsedData($rawData);
+        $envParsedData = $this->envVarParser->getParsedData($path, $rawData);
         $data = json_decode($envParsedData, true);
 
         if (null === $data) {

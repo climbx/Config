@@ -39,7 +39,7 @@ class YamlLoader extends Loader implements LoaderInterface
         }
 
         $rawData = $this->fileHelper->getContentAsString($filename);
-        $envParsedData = $this->envVarParser->getParsedData($rawData);
+        $envParsedData = $this->envVarParser->getParsedData($path, $rawData);
 
         try {
             $data = yaml_parse($envParsedData);
