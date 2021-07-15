@@ -3,24 +3,37 @@
 namespace Climbx\Config\Parser;
 
 use Climbx\Bag\BagInterface;
+use Climbx\Config\Exception\MissingEnvParameterException;
 
 class EnvVarParser
 {
+    /**
+     * @var string
+     */
+    private string $path;
+
+    /**
+     * @param BagInterface $env
+     */
     public function __construct(
         private BagInterface $env
     ) {
     }
 
-    public function getParsedData(string $configFile): string
+    /**
+     * @param string $path
+     * @param string $configFile
+     *
+     * @return string
+     */
+    public function getParsedData(string $path, string $configFile): string
     {
+        $this->path = $path;
+
         return preg_replace_callback(
             '#\$env\(([a-zA-Z]+(_?[a-zA-Z0-9]+)*)\)#',
             function ($matches) {
-                if ($this->hasEnvValue($matches[1])) {
-                    return $this->getEnvValue($matches[1]);
-                }
-
-                return $matches[0];
+                return $this->requireEnvVar($matches[1]);
             },
             $configFile
         );
@@ -29,20 +42,22 @@ class EnvVarParser
     /**
      * @param string $var
      *
-     * @return bool
-     */
-    private function hasEnvValue(string $var): bool
-    {
-        return $this->env->has($var);
-    }
-
-    /**
-     * @param string $var
-     *
      * @return string
+     *
+     * @throws MissingEnvParameterException
      */
-    private function getEnvValue(string $var): string
+    private function requireEnvVar(string $var): string
     {
-        return $this->env->get($var);
+        $value = $this->env->get($var);
+
+        if ($value !== false) {
+            return $value;
+        }
+
+        throw new MissingEnvParameterException(sprintf(
+            'A reference to "%s" .env parameter has been added to "%s" config file and is missing in .env file',
+            $var,
+            $this->path,
+        ));
     }
 }
