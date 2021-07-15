@@ -59,15 +59,13 @@ $config = $container->require('myConfigFile');
 
 ### Note
 The configuration files names extensions has to be dismissed.
-They are added automatically by the loader. They depend
-on the loader that has been passed to the config container.
+They are added automatically by the Loader.
 
 ### Env Vars Parser
-It is possible to add a reference to a .env var into a configuration
+It is possible to add a reference to a `.env` var into a configuration
 item. It is done with the magic expression `$env(MY_ENV_PARAMETER)`.
-If the reference exists in the env Bag that has been passed, it will
-be automatically replaced by its .env value. If it doesn't exist,
-a MissingEnvParameterException will be thrown.
+If the reference exists in `.env`, it will be replaced by its value.
+If it doesn't exist, a MissingEnvParameterException will be thrown.
 
 ```dotenv
 # .env file
