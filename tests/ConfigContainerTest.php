@@ -25,6 +25,9 @@ class ConfigContainerTest extends TestCase
 
         $this->assertInstanceOf(ConfigBag::class, $config);
         $this->assertSame(['FOO' => 'BAR'], $config->getAll());
+
+        $alreadyLoadedConfig = $container->get('config');
+        $this->assertSame($config, $alreadyLoadedConfig);
     }
 
     public function testGetMissingConfig()
@@ -48,6 +51,9 @@ class ConfigContainerTest extends TestCase
 
         $this->assertInstanceOf(ConfigBag::class, $config);
         $this->assertSame(['FOO' => 'BAR'], $config->getAll());
+
+        $alreadyLoadedConfig = $container->require('config');
+        $this->assertSame($config, $alreadyLoadedConfig);
     }
 
     public function testRequireMissingConfig()
