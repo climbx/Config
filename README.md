@@ -1,5 +1,5 @@
 # Config
-Framework config. files manager
+Framework config. files manager. Implements PSR-11
 
 ## Configuration files formats
 This component accepts Yaml and Json files formats.
@@ -22,50 +22,50 @@ use Climbx\Bag\Bag;
 use Climbx\Config\Loader\JsonLoader;
 use Climbx\Filesystem\FileHelper;
 use Climbx\Config\Parser\EnvVarParser;
+use Climbx\Config\Reader\Reader;
 use Climbx\Config\ConfigContainer;
 
-// Get config dir
-$configDir = __DIR__ . 'config/';
-
 // Bag with array of .env data
-$env = new Bag(['FOO' => 'BAR']);
 
-// Container dependencies 
-$fileHelper = new FileHelper();
-$envVarParser = new EnvVarParser($env);
+// JsonLoader
+$jsonLoader = new JsonLoader(__DIR__ . 'config/', new FileHelper());
 
-// Instantiate the Json loader
-$jsonLoader = new JsonLoader($configDir, $fileHelper, $envVarParser);
+// Config files Reader
+$env = new Bag(['FOO' => 'BAR']); // loaded from .env file
+$reader = new Reader($jsonLoader, new EnvVarParser($env));
 
 // Container
-$container = new ConfigContainer($jsonLoader);
+$container = new ConfigContainer($reader);
 
 /*
  * get() method
  * 
  * If the config file exists it will be returned
- * If not, the method returns false.
+ * 
+ * If not, a NotFoundException is thrown.
+ * 
+ * If the config file is not valid, a ConfigurationParserException
+ * is thrown
+ * 
+ * If a referenced .env var is missing in .env file,
+ * a EnvParameterNotFoundException is thrown.
  */
-$config = $container->get('lib/myConfig');
+$config = $container->get('myConfigId');
 
 /*
- * require() method.
+ * has() method.
  * 
- * If the config file exists it will be returned
- * If not, a MissingConfigurationException will be thrown. 
+ * This method returns true if the config exists and is readable,
+ * and false otherwise.
  */
-$config = $container->require('myConfigFile');
+$config = $container->has('myConfigId');
 ```
-
-### Note
-The configuration files names extensions has to be dismissed.
-They are added automatically by the Loader.
 
 ### Env Vars Parser
 It is possible to add a reference to a `.env` var into a configuration
-item. It is done with the magic expression `$env(MY_ENV_PARAMETER)`.
+var. It is done with the magic expression `$env(MY_ENV_VAR)`.
 If the reference exists in `.env`, it will be replaced by its value.
-If it doesn't exist, a MissingEnvParameterException will be thrown.
+If not, a EnvParameterNotFoundException will be thrown.
 
 ```dotenv
 # .env file
@@ -82,7 +82,7 @@ BAZ: $env(FOO)
 ```php
 // PHP Code
 
-$container = new ConfigContainer($yamlLoader);
+$container = new ConfigContainer($reader);
 
 $config = $container->get('config');
 echo $config->get('BAZ'); // Will print: BAR
