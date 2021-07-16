@@ -4,14 +4,12 @@ namespace Climbx\Config\Tests\Loader;
 
 use Climbx\Config\Exception\ConfigurationParserException;
 use Climbx\Config\Loader\JsonLoader;
-use Climbx\Config\Parser\EnvVarParser;
 use Climbx\Filesystem\FileHelper;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Climbx\Config\Loader\Loader
  * @covers \Climbx\Config\Loader\JsonLoader
- * @covers \Climbx\Config\Parser\EnvVarParser
  * @covers \Climbx\Filesystem\FileHelper
  */
 class JsonLoaderTest extends TestCase
@@ -20,9 +18,8 @@ class JsonLoaderTest extends TestCase
     {
         $configDir = '/path/to/config/dir/';
         $fileHelper = $this->createStub(FileHelper::class);
-        $envVarParser = $this->createStub(EnvVarParser::class);
 
-        $loader = new JsonLoader($configDir, $fileHelper, $envVarParser);
+        $loader = new JsonLoader($configDir, $fileHelper);
 
         $data = $loader->load('myConfig');
 
@@ -40,9 +37,7 @@ class JsonLoaderTest extends TestCase
                 $this->equalTo('/path/to/config/dir/myConfig.json')
             );
 
-        $envVarParser = $this->createStub(EnvVarParser::class);
-
-        $loader = new JsonLoader($configDir, $fileHelper, $envVarParser);
+        $loader = new JsonLoader($configDir, $fileHelper);
 
         $loader->load('myConfig');
     }
@@ -57,10 +52,7 @@ class JsonLoaderTest extends TestCase
         $fileHelper->method('isReadable')->willReturn(true);
         $fileHelper->method('getContentAsString')->willReturn($fileAsString);
 
-        $envVarParser = $this->createStub(EnvVarParser::class);
-        $envVarParser->method('getParsedData')->willReturn($fileAsString);
-
-        $loader = new JsonLoader($configDir, $fileHelper, $envVarParser);
+        $loader = new JsonLoader($configDir, $fileHelper);
 
         $this->expectException(ConfigurationParserException::class);
         $this->expectExceptionMessage('The configuration file "myConfig" is not valid json.');
@@ -77,12 +69,24 @@ class JsonLoaderTest extends TestCase
         $fileHelper->method('isReadable')->willReturn(true);
         $fileHelper->method('getContentAsString')->willReturn($fileAsString);
 
-        $envVarParser = $this->createStub(EnvVarParser::class);
-        $envVarParser->method('getParsedData')->willReturn($fileAsString);
-
-        $loader = new JsonLoader($configDir, $fileHelper, $envVarParser);
+        $loader = new JsonLoader($configDir, $fileHelper);
         $data = $loader->load('myConfig');
 
         $this->assertEquals(['FOO' => 'BAR', 'BAZ' => 1234], $data);
+    }
+
+    public function testIsReadable()
+    {
+        $configDir = '/path/to/config/dir/';
+
+        $fileHelper = $this->createStub(FileHelper::class);
+        $fileHelper->method('isReadable')->willReturnMap([
+            ['/path/to/config/dir/readableConfig.json', true], ['/path/to/config/dir/missingConfig.json', false]
+        ]);
+
+        $loader = new JsonLoader($configDir, $fileHelper);
+
+        $this->assertTrue($loader->isReadable('readableConfig'));
+        $this->assertFalse($loader->isReadable('missingConfig'));
     }
 }
