@@ -2,32 +2,25 @@
 
 namespace Climbx\Config;
 
-use Climbx\Config\Exception\ConfigurationParserException;
 use Climbx\Config\Bag\ConfigBag;
+use Climbx\Config\Exception\ContainerExceptionInterface;
+use Climbx\Config\Exception\NotFoundExceptionInterface;
+use Psr\Container\ContainerInterface;
 
-interface ConfigContainerInterface
+interface ConfigContainerInterface extends ContainerInterface
 {
     /**
-     * Returns a config bag from path.
+     * Returns a config bag from its id.
      *
-     * If the config file is not found, false is returned
+     * If the config file is not found, a NotFoundExceptionInterface exception is thrown.
+     * If a problem occurs while loading, a ContainerExceptionInterface exception is thrown.
      *
-     * @param string $path
-     *
-     * @return ConfigBag|false
-     */
-    public function get(string $path): ConfigBag | false;
-
-    /**
-     * Returns a config bag from path.
-     *
-     * If the config file is not found, an exception is thrown.
-     *
-     * @param string $path
+     * @param string $id
      *
      * @return ConfigBag
      *
-     * @throws ConfigurationParserException
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
      */
-    public function require(string $path): ConfigBag;
+    public function get(string $id): ConfigBag;
 }
