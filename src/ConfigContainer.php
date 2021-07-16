@@ -3,64 +3,47 @@
 namespace Climbx\Config;
 
 use Climbx\Config\Bag\ConfigBag;
-use Climbx\Config\Exception\MissingConfigurationException;
-use Climbx\Config\Loader\LoaderInterface;
+use Climbx\Config\Exception\NotFoundException;
+use Climbx\Config\Reader\ReaderInterface;
 
 class ConfigContainer implements ConfigContainerInterface
 {
     private array $container = [];
 
     /**
-     * @param LoaderInterface $loader
+     * @param ReaderInterface $reader
      */
     public function __construct(
-        private LoaderInterface $loader
+        private ReaderInterface $reader
     ) {
     }
 
-    public function get(string $path): ConfigBag | false
+    public function get(string $id): ConfigBag
     {
-        if ($this->has($path)) {
-            return $this->container[$path];
+        if (array_key_exists($id, $this->container)) {
+            return $this->container[$id];
         }
 
-        $config = $this->loader->load($path);
+        $config = $this->reader->read($id);
 
         if (!$config) {
-            return false;
-        }
-
-        $this->container[$path] = new ConfigBag($path, $config);
-
-        return $this->container[$path];
-    }
-
-    public function require(string $path): ConfigBag
-    {
-        if ($this->has($path)) {
-            return $this->container[$path];
-        }
-
-        $config = $this->loader->load($path);
-
-        if (!$config) {
-            throw new MissingConfigurationException(
-                sprintf('The configuration file "%s" is missing', $path)
+            throw new NotFoundException(
+                sprintf('The configuration file "%s" is missing', $id)
             );
         }
 
-        $this->container[$path] = new ConfigBag($path, $config);
+        $this->container[$id] = new ConfigBag($id, $config);
 
-        return $this->container[$path];
+        return $this->container[$id];
     }
 
     /**
-     * @param string $path
+     * @param string $id
      *
      * @return bool
      */
-    private function has(string $path): bool
+    public function has(string $id): bool
     {
-        return array_key_exists($path, $this->container);
+        return $this->reader->isReadable($id);
     }
 }
