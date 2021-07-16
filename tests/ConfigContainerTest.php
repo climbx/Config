@@ -4,8 +4,9 @@ namespace Climbx\Config\Tests;
 
 use Climbx\Config\Bag\ConfigBag;
 use Climbx\Config\ConfigContainer;
-use Climbx\Config\Exception\MissingConfigurationException;
+use Climbx\Config\Exception\NotFoundException;
 use Climbx\Config\Loader\JsonLoader;
+use Climbx\Config\Reader\Reader;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,12 +15,12 @@ use PHPUnit\Framework\TestCase;
  */
 class ConfigContainerTest extends TestCase
 {
-    public function testGetExistingConfig()
+    public function testGetConfig()
     {
-        $loader = $this->createStub(JsonLoader::class);
-        $loader->method('load')->willReturn(['FOO' => 'BAR']);
+        $reader = $this->createStub(Reader::class);
+        $reader->method('read')->willReturn(['FOO' => 'BAR']);
 
-        $container = new ConfigContainer($loader);
+        $container = new ConfigContainer($reader);
 
         $config = $container->get('config');
 
@@ -32,40 +33,25 @@ class ConfigContainerTest extends TestCase
 
     public function testGetMissingConfig()
     {
-        $loader = $this->createStub(JsonLoader::class);
-        $loader->method('load')->willReturn(false);
+        $reader = $this->createStub(Reader::class);
+        $reader->method('read')->willReturn(false);
 
-        $container = new ConfigContainer($loader);
+        $container = new ConfigContainer($reader);
 
-        $this->assertFalse( $container->get('config'));
-    }
-
-    public function testRequireConfig()
-    {
-        $loader = $this->createStub(JsonLoader::class);
-        $loader->method('load')->willReturn(['FOO' => 'BAR']);
-
-        $container = new ConfigContainer($loader);
-
-        $config = $container->require('config');
-
-        $this->assertInstanceOf(ConfigBag::class, $config);
-        $this->assertSame(['FOO' => 'BAR'], $config->getAll());
-
-        $alreadyLoadedConfig = $container->require('config');
-        $this->assertSame($config, $alreadyLoadedConfig);
-    }
-
-    public function testRequireMissingConfig()
-    {
-        $loader = $this->createStub(JsonLoader::class);
-        $loader->method('load')->willReturn(false);
-
-        $container = new ConfigContainer($loader);
-
-        $this->expectException(MissingConfigurationException::class);
+        $this->expectException(NotFoundException::class);
         $this->expectExceptionMessage('The configuration file "config" is missing');
 
-        $container->require('config');
+        $container->get('config');
+    }
+
+    public function testHasConfig()
+    {
+        $reader = $this->createStub(Reader::class);
+        $reader->method('isReadable')->willReturnMap([['existingConfig', true], ['missingConfig', false]]);
+
+        $container = new ConfigContainer($reader);
+
+        $this->assertTrue($container->has('existingConfig'));
+        $this->assertFalse($container->has('missingConfig'));
     }
 }
