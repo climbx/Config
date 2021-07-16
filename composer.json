@@ -3,7 +3,7 @@
     "description": "Tools to manage framework config files",
     "version": "1.0.0",
     "type": "library",
-    "keywords": ["php", "config"],
+    "keywords": ["php", "config", "container", "PSR-11"],
     "time": "2021-07-06",
     "license": "MIT",
     "authors": [
@@ -24,7 +24,8 @@
         "php": ">=8.0",
         "climbx/filesystem": "^1.0",
         "climbx/bag": "^1.0",
-        "ext-yaml": "*"
+        "ext-yaml": "*",
+        "psr/container": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
