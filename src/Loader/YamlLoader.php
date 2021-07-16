@@ -6,15 +6,13 @@ use Climbx\Config\Exception\ConfigurationParserException;
 
 class YamlLoader extends Loader implements LoaderInterface
 {
-    private const FILE_EXT = ['.yml', '.yaml'];
+    private const FILE_EXT_SHORT = '.yml';
+    private const FILE_EXT_LONG = '.yaml';
 
-    /**
-     * @inheritDoc
-     */
-    public function load(string $path): array | false
+    public function load(string $id): array | false
     {
-        foreach (self::FILE_EXT as $fileExt) {
-            $data = $this->loadData($this->getConfigDir() . $path . $fileExt, $path);
+        foreach ($this->getFilenames($id) as $filename) {
+            $data = $this->loadData($filename, $id);
 
             if (is_array($data)) {
                 return $data;
@@ -24,31 +22,56 @@ class YamlLoader extends Loader implements LoaderInterface
         return false;
     }
 
+    public function isReadable(string $id): bool
+    {
+        foreach ($this->getFilenames($id) as $filename) {
+            if ($this->fileHelper->isReadable($filename)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @param string $filename
-     * @param string $path
+     * @param string $id
      *
      * @return array|false
      *
      * @throws ConfigurationParserException
      */
-    private function loadData(string $filename, string $path): array | false
+    private function loadData(string $filename, string $id): array | false
     {
         if (!$this->fileHelper->isReadable($filename)) {
             return false;
         }
 
         $rawData = $this->fileHelper->getContentAsString($filename);
-        $envParsedData = $this->envVarParser->getParsedData($path, $rawData);
 
         try {
-            $data = yaml_parse($envParsedData);
+            $data = yaml_parse($rawData);
         } catch (\Throwable) {
             throw new ConfigurationParserException(
-                sprintf('The configuration file "%s" is not valid yaml.', $path)
+                sprintf('The configuration file "%s" is not valid yaml.', $id)
             );
         }
 
         return $data;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return string[]
+     */
+    private function getFilenames(string $id): array
+    {
+        $prefix = $this->getConfigDir() . $id;
+
+        return [
+            $prefix . self::FILE_EXT_SHORT,
+            $prefix . self::FILE_EXT_LONG,
+        ];
     }
 }
