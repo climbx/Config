@@ -3,50 +3,50 @@
 namespace Climbx\Config\Parser;
 
 use Climbx\Bag\BagInterface;
-use Climbx\Config\Exception\MissingEnvParameterException;
+use Climbx\Config\Exception\EnvParameterNotFoundException;
 
-class EnvVarParser
+class EnvVarParser implements EnvVarParserInterface
 {
-    /**
-     * @var string
-     */
-    private string $path;
-
-    /**
-     * @param BagInterface $env
-     */
     public function __construct(
         private BagInterface $env
     ) {
     }
 
+    public function getParsedData(string $id, array $data): array
+    {
+        foreach ($data as $key => $value) {
+            $data[$key] = (is_array($value)) ? $this->getParsedData($id, $value) : $this->parseData($id, $value);
+        }
+
+        return $data;
+    }
+
     /**
-     * @param string $path
-     * @param string $configFile
+     * @param string $id
+     * @param string $value
      *
      * @return string
      */
-    public function getParsedData(string $path, string $configFile): string
+    private function parseData(string $id, string $value): string
     {
-        $this->path = $path;
-
         return preg_replace_callback(
             '#\$env\(([a-zA-Z]+(_?[a-zA-Z0-9]+)*)\)#',
-            function ($matches) {
-                return $this->requireEnvVar($matches[1]);
+            function ($matches) use ($id) {
+                return $this->requireEnvVar($id, $matches[1]);
             },
-            $configFile
+            $value
         );
     }
 
     /**
+     * @param string $id
      * @param string $var
      *
      * @return string
      *
-     * @throws MissingEnvParameterException
+     * @throws EnvParameterNotFoundException
      */
-    private function requireEnvVar(string $var): string
+    private function requireEnvVar(string $id, string $var): string
     {
         $value = $this->env->get($var);
 
@@ -54,10 +54,10 @@ class EnvVarParser
             return $value;
         }
 
-        throw new MissingEnvParameterException(sprintf(
+        throw new EnvParameterNotFoundException(sprintf(
             'A reference to "%s" .env parameter has been added to "%s" config file and is missing in .env file',
             $var,
-            $this->path,
+            $id,
         ));
     }
 }
