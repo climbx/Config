@@ -1,7 +1,7 @@
 {
     "name": "climbx/config",
     "description": "Tools to manage framework config files",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "library",
     "keywords": ["php", "config", "container", "PSR-11"],
     "time": "2021-07-06",
