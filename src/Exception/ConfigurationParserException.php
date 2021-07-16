@@ -2,6 +2,6 @@
 
 namespace Climbx\Config\Exception;
 
-class ConfigurationParserException extends \RuntimeException implements ExceptionInterface
+class ConfigurationParserException extends \RuntimeException implements ContainerExceptionInterface
 {
 }
