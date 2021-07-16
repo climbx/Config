@@ -12,7 +12,6 @@ use PHPUnit\Framework\TestCase;
  * @covers \Climbx\Config\Loader\Loader
  * @covers \Climbx\Config\Loader\YamlLoader
  * @covers \Climbx\Filesystem\FileHelper
- * @covers \Climbx\Config\Parser\EnvVarParser
  */
 class YamlLoaderTest extends TestCase
 {
@@ -20,9 +19,8 @@ class YamlLoaderTest extends TestCase
     {
         $configDir = '/path/to/config/dir/';
         $fileHelper = $this->createStub(FileHelper::class);
-        $envVarParser = $this->createStub(EnvVarParser::class);
 
-        $loader = new YamlLoader($configDir, $fileHelper, $envVarParser);
+        $loader = new YamlLoader($configDir, $fileHelper);
 
         $data = $loader->load('myConfig');
 
@@ -41,9 +39,7 @@ class YamlLoaderTest extends TestCase
                 [$this->equalTo('/path/to/config/dir/myConfig.yaml')],
             );
 
-        $envVarParser = $this->createStub(EnvVarParser::class);
-
-        $loader = new YamlLoader($configDir, $fileHelper, $envVarParser);
+        $loader = new YamlLoader($configDir, $fileHelper);
 
         $loader->load('myConfig');
     }
@@ -58,10 +54,7 @@ class YamlLoaderTest extends TestCase
         $fileHelper->method('isReadable')->willReturn(true);
         $fileHelper->method('getContentAsString')->willReturn($fileAsString);
 
-        $envVarParser = $this->createStub(EnvVarParser::class);
-        $envVarParser->method('getParsedData')->willReturn($fileAsString);
-
-        $loader = new YamlLoader($configDir, $fileHelper, $envVarParser);
+        $loader = new YamlLoader($configDir, $fileHelper);
 
         $this->expectException(ConfigurationParserException::class);
         $this->expectExceptionMessage('The configuration file "myConfig" is not valid yaml.');
@@ -78,12 +71,27 @@ class YamlLoaderTest extends TestCase
         $fileHelper->method('isReadable')->willReturn(true);
         $fileHelper->method('getContentAsString')->willReturn($fileAsString);
 
-        $envVarParser = $this->createStub(EnvVarParser::class);
-        $envVarParser->method('getParsedData')->willReturn($fileAsString);
-
-        $loader = new YamlLoader($configDir, $fileHelper, $envVarParser);
+        $loader = new YamlLoader($configDir, $fileHelper);
         $data = $loader->load('myConfig');
 
         $this->assertEquals(['FOO' => ['BAR' => 'BAZ', 'BAZ' => 1234]], $data);
+    }
+
+    public function testIsReadable()
+    {
+        $configDir = '/path/to/config/dir/';
+
+        $fileHelper = $this->createStub(FileHelper::class);
+        $fileHelper->method('isReadable')->willReturnMap([
+            ['/path/to/config/dir/readableConfig.yml', false],
+            ['/path/to/config/dir/readableConfig.yaml', true],
+            ['/path/to/config/dir/missingConfig.yml', false],
+            ['/path/to/config/dir/missingConfig.yaml', false]
+        ]);
+
+        $loader = new YamlLoader($configDir, $fileHelper);
+
+        $this->assertTrue($loader->isReadable('readableConfig'));
+        $this->assertFalse($loader->isReadable('missingConfig'));
     }
 }
