@@ -26,7 +26,7 @@ class ConfigContainer implements ConfigContainerInterface
 
         $config = $this->reader->read($id);
 
-        if (!$config) {
+        if ($config === false) {
             throw new NotFoundException(
                 sprintf('The configuration file "%s" is missing', $id)
             );
