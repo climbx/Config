@@ -59,6 +59,23 @@ class JsonLoaderTest extends TestCase
         $loader->load('myConfig');
     }
 
+    public function testLoadEmptyData()
+    {
+        $configDir = '/path/to/config/dir/';
+
+        $fileAsString = "{\n}";
+
+        $fileHelper = $this->createStub(FileHelper::class);
+        $fileHelper->method('isReadable')->willReturn(true);
+        $fileHelper->method('getContentAsString')->willReturn($fileAsString);
+
+        $loader = new JsonLoader($configDir, $fileHelper);
+        $data = $loader->load('myConfig');
+
+        $this->assertIsArray($data);
+        $this->assertEquals([], $data);
+    }
+
     public function testLoadData()
     {
         $configDir = '/path/to/config/dir/';
