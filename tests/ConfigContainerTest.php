@@ -44,6 +44,19 @@ class ConfigContainerTest extends TestCase
         $container->get('config');
     }
 
+    public function testGetEmptyConfig()
+    {
+        $reader = $this->createStub(Reader::class);
+        $reader->method('read')->willReturn([]);
+
+        $container = new ConfigContainer($reader);
+
+        $config = $container->get('config');
+
+        $this->assertInstanceOf(ConfigBag::class, $config);
+        $this->assertSame([], $config->getAll());
+    }
+
     public function testHasConfig()
     {
         $reader = $this->createStub(Reader::class);
