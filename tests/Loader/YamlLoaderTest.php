@@ -3,6 +3,7 @@
 namespace Climbx\Config\Tests\Loader;
 
 use Climbx\Config\Exception\ConfigurationParserException;
+use Climbx\Config\Loader\Loader;
 use Climbx\Config\Loader\YamlLoader;
 use Climbx\Config\Parser\EnvVarParser;
 use Climbx\Filesystem\FileHelper;
@@ -59,6 +60,23 @@ class YamlLoaderTest extends TestCase
         $this->expectException(ConfigurationParserException::class);
         $this->expectExceptionMessage('The configuration file "myConfig" is not valid yaml.');
         $loader->load('myConfig');
+    }
+
+    public function testLoadEmptyData()
+    {
+        $configDir = '/path/to/config/dir/';
+
+        $fileAsString = "";
+
+        $fileHelper = $this->createStub(FileHelper::class);
+        $fileHelper->method('isReadable')->willReturn(true);
+        $fileHelper->method('getContentAsString')->willReturn($fileAsString);
+
+        $loader = new YamlLoader($configDir, $fileHelper);
+        $data = $loader->load('myConfig');
+
+        $this->assertIsArray($data);
+        $this->assertEquals([], $data);
     }
 
     public function testLoadData()
