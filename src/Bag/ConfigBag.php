@@ -3,9 +3,8 @@
 namespace Climbx\Config\Bag;
 
 use Climbx\Bag\Bag;
-use Climbx\Config\Exception\MissingItemException;
 
-class ConfigBag extends Bag
+class ConfigBag extends Bag implements ConfigBagInterface
 {
     /**
      * @var string ConfigBag name
@@ -25,9 +24,9 @@ class ConfigBag extends Bag
     /**
      * @inheritDoc
      */
-    public function require($item, $errorMessage = null): int | string | object | array | bool | null
+    public function get($item, $errorMessage = null): int | string | object | array | bool | null
     {
-        return parent::require(
+        return parent::get(
             $item,
             sprintf('The parameter "{item}" is missing in "%s" configuration file.', $this->getName())
         );
