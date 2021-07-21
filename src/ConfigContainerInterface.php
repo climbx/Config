@@ -2,7 +2,7 @@
 
 namespace Climbx\Config;
 
-use Climbx\Config\Bag\ConfigBag;
+use Climbx\Config\Bag\ConfigBagInterface;
 use Climbx\Config\Exception\ContainerExceptionInterface;
 use Climbx\Config\Exception\NotFoundExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -17,10 +17,10 @@ interface ConfigContainerInterface extends ContainerInterface
      *
      * @param string $id
      *
-     * @return ConfigBag
+     * @return ConfigBagInterface
      *
      * @throws NotFoundExceptionInterface
      * @throws ContainerExceptionInterface
      */
-    public function get(string $id): ConfigBag;
+    public function get(string $id): ConfigBagInterface;
 }
