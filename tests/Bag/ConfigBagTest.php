@@ -3,7 +3,7 @@
 namespace Climbx\Config\Tests\Bag;
 
 use Climbx\Config\Bag\ConfigBag;
-use Climbx\Bag\Exception\MissingItemException;
+use Climbx\Bag\Exception\NotFoundException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,9 +22,9 @@ class ConfigBagTest extends TestCase
     {
         $bag = new ConfigBag('lib/myConfig');
 
-        $this->expectException(MissingItemException::class);
+        $this->expectException(NotFoundException::class);
         $this->expectExceptionMessage('The parameter "FOO" is missing in "lib/myConfig" configuration file.');
 
-        $bag->require('FOO');
+        $bag->get('FOO');
     }
 }
