@@ -10,7 +10,7 @@ class Reader implements ReaderInterface
     public function __construct(
         private LoaderInterface $loader,
         private EnvVarParserInterface $envVarParser,
-    ){
+    ) {
     }
 
     public function read(string $id): array | false
