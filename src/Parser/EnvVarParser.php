@@ -3,6 +3,7 @@
 namespace Climbx\Config\Parser;
 
 use Climbx\Bag\BagInterface;
+use Climbx\Bag\Exception\NotFoundExceptionInterface;
 use Climbx\Config\Exception\EnvParameterNotFoundException;
 
 class EnvVarParser implements EnvVarParserInterface
@@ -32,7 +33,7 @@ class EnvVarParser implements EnvVarParserInterface
         return preg_replace_callback(
             '#\$env\(([a-zA-Z]+(_?[a-zA-Z0-9]+)*)\)#',
             function ($matches) use ($id) {
-                return $this->requireEnvVar($id, $matches[1]);
+                return $this->getEnvVar($id, $matches[1]);
             },
             $value
         );
@@ -46,18 +47,16 @@ class EnvVarParser implements EnvVarParserInterface
      *
      * @throws EnvParameterNotFoundException
      */
-    private function requireEnvVar(string $id, string $var): string
+    private function getEnvVar(string $id, string $var): string
     {
-        $value = $this->env->get($var);
-
-        if ($value !== false) {
-            return $value;
+        try {
+            return $this->env->get($var);
+        } catch (NotFoundExceptionInterface) {
+            throw new EnvParameterNotFoundException(sprintf(
+                'A reference to "%s" .env parameter has been added to "%s" config file and is missing in .env file',
+                $var,
+                $id,
+            ));
         }
-
-        throw new EnvParameterNotFoundException(sprintf(
-            'A reference to "%s" .env parameter has been added to "%s" config file and is missing in .env file',
-            $var,
-            $id,
-        ));
     }
 }
