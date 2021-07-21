@@ -3,6 +3,7 @@
 namespace Climbx\Config\Tests\Parser;
 
 use Climbx\Bag\Bag;
+use Climbx\Bag\Exception\NotFoundException;
 use Climbx\Config\Exception\EnvParameterNotFoundException;
 use Climbx\Config\Parser\EnvVarParser;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +31,7 @@ class EnvVarParserTest extends TestCase
     /**
      * @dataProvider stubMapProvider
      */
-    public function testGetParsedDataz(
+    public function testGetParsedData(
         array $envStubGetMap,
         array $data,
         array $expectedResult
@@ -50,14 +51,14 @@ class EnvVarParserTest extends TestCase
     {
         return [
             // Simple .env reference
-            [[['BAR', 'BAZ']], ['FOO' => '$env(BAR)'], ['FOO' => 'BAZ']],
+            [[['BAR', null, 'BAZ']], ['FOO' => '$env(BAR)'], ['FOO' => 'BAZ']],
             // Expression do not match $env(VAR) pattern.
-            [[['BAR', 'BAZ']], ['FOO' => 'env(BAR)'], ['FOO' => 'env(BAR)']],
+            [[['BAR', null, 'BAZ']], ['FOO' => 'env(BAR)'], ['FOO' => 'env(BAR)']],
             // Multidimensional array with multiple .env references.
             [
                 [ // Bag Map
-                    ['BAR1', 'BAZ1'],
-                    ['BAR2', 'BAZ2']
+                    ['BAR1', null, 'BAZ1'],
+                    ['BAR2', null, 'BAZ2']
                 ],
                 [ // Raw data to parse
                     'FOO' => [
@@ -86,7 +87,7 @@ class EnvVarParserTest extends TestCase
     public function testGetParsedDataException()
     {
         $envStub = $this->createStub(Bag::class);
-        $envStub->method('get')->willReturn(false);
+        $envStub->method('get')->willThrowException(new NotFoundException());
 
         $parser = new EnvVarParser($envStub);
 
