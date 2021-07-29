@@ -23,13 +23,17 @@ class EnvVarParser implements EnvVarParserInterface
     }
 
     /**
-     * @param string $id
-     * @param string $value
+     * @param string          $id
+     * @param bool|int|string $value
      *
-     * @return string
+     * @return bool|int|string
      */
-    private function parseData(string $id, string $value): string
+    private function parseData(string $id, bool | int | string $value): bool | int | string
     {
+        if (!is_string($value)) {
+            return $value;
+        }
+
         return preg_replace_callback(
             '#\$env\(([a-zA-Z]+(_?[a-zA-Z0-9]+)*)\)#',
             function ($matches) use ($id) {
