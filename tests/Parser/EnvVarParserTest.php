@@ -98,4 +98,30 @@ class EnvVarParserTest extends TestCase
 
         $parser->getParsedData('myConfig', ['FOO' => '$env(BAR)']);
     }
+
+    public function testDataReturnTypes()
+    {
+        $envStub = $this->createStub(Bag::class);
+
+        $data = [
+            'boolVal' => true,
+            'intVal' => 1245,
+            'stringVal' => 'Hello world',
+            'arrayVal' => ['FOO' => 'BAR'],
+            'deepData' => ['bool' => true, 'int' => 455, 'string' => 'Hello world', 'array' => ['FOO' => 'BAR']]
+        ];
+
+        $parser = new EnvVarParser($envStub);
+        $parsedData = $parser->getParsedData('myConfig', $data);
+
+        $this->assertIsBool($parsedData['boolVal']);
+        $this->assertIsInt($parsedData['intVal']);
+        $this->assertIsString($parsedData['stringVal']);
+        $this->assertIsArray($parsedData['arrayVal']);
+
+        $this->assertIsBool($parsedData['deepData']['bool']);
+        $this->assertIsInt($parsedData['deepData']['int']);
+        $this->assertIsString($parsedData['deepData']['string']);
+        $this->assertIsArray($parsedData['deepData']['array']);
+    }
 }
